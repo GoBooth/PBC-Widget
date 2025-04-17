@@ -11,10 +11,38 @@
 <body class="bg-gray-100 font-sans">
 
   <div class="max-w-7xl mx-auto p-6">
-    <h1 class="text-4xl font-bold mb-6 text-center">Choose Your Backdrop</h1>
+    <h1 class="text-4xl font-bold mb-4 text-center">Choose Your Backdrop</h1>
+    <!-- Controls: Search, Sort, Category -->
+    <div class="mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <!-- Search -->
+        <input id="searchInput" type="text" placeholder="Search backdrops..." 
+               class="flex-1 px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring" />
+        <!-- Sort -->
+        <div class="flex items-center space-x-2">
+          <label for="sortSelect" class="font-medium">Sort:</label>
+          <select id="sortSelect" class="px-3 py-2 border rounded focus:outline-none">
+            <option value="az">Name A → Z</option>
+            <option value="za">Name Z → A</option>
+          </select>
+        </div>
+        <!-- Category -->
+        <div class="flex items-center space-x-2">
+          <label for="categorySelect" class="font-medium">Category:</label>
+          <select id="categorySelect" class="px-3 py-2 border rounded focus:outline-none">
+            <option value="">All</option>
+            <% categories.forEach(c => { %>
+              <option value="<%= c.toLowerCase() %>"><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- Gallery -->
     <div id="gallery" class="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
       <% backdrops.forEach(b => { %>
-        <div class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-white cursor-pointer" data-url="<%= b.url %>" data-name="<%= b.name %>">
+        <div class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-white cursor-pointer" 
+             data-url="<%= b.url %>" data-name="<%= b.name %>">
           <img src="<%= b.url %>" alt="<%= b.name %>" class="w-full h-48 object-cover" />
           <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-transparent p-2 opacity-0 hover:opacity-100 transition-opacity">
             <p class="text-white text-sm font-medium"><%= b.name %></p>
@@ -48,6 +76,31 @@
     document.getElementById('close').onclick = () => {
       document.getElementById('lightbox').classList.add('opacity-0', 'pointer-events-none');
     };
+    // Filter & Sort Controls
+    const gallery = document.getElementById('gallery');
+    const cards = Array.from(gallery.querySelectorAll('[data-url]'));
+    function filterAndSort() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const sortOrder  = document.getElementById('sortSelect').value;
+      const category   = document.getElementById('categorySelect').value;
+      let filtered = cards.filter(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        const cat  = name.split(' ')[0];
+        const matchesSearch   = name.includes(searchTerm);
+        const matchesCategory = !category || cat === category;
+        return matchesSearch && matchesCategory;
+      });
+      if (sortOrder === 'az') {
+        filtered.sort((a, b) => a.getAttribute('data-name').localeCompare(b.getAttribute('data-name')));
+      } else if (sortOrder === 'za') {
+        filtered.sort((a, b) => b.getAttribute('data-name').localeCompare(a.getAttribute('data-name')));
+      }
+      gallery.innerHTML = '';
+      filtered.forEach(card => gallery.appendChild(card));
+    }
+    document.getElementById('searchInput').addEventListener('input', filterAndSort);
+    document.getElementById('sortSelect').addEventListener('change', filterAndSort);
+    document.getElementById('categorySelect').addEventListener('change', filterAndSort);
   </script>
 </body>
 </html>

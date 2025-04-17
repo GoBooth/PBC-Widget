@@ -199,7 +199,9 @@ app.get('/embed/v1/:apiKey', (req, res) => {
     url: encodeURI(`/Backdrop_photos/${f}`),
     name: f.replace(/\.[^/.]+$/, '')
   }));
-  res.render('embed', { backdrops });
+  // Derive simple categories (first word of name) for filtering
+  const categories = [...new Set(backdrops.map(b => b.name.split(' ')[0]))].sort();
+  res.render('embed', { backdrops, categories });
 });
 // 404 handler
 app.use((req, res) => {
