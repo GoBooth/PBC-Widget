@@ -1,9 +1,10 @@
 <%- include('../partials/header') %>
 <%- include('../partials/dashboardTabs') %>
 
-<div class="container mx-auto px-4 py-4">
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black p-6">
+  <div class="container mx-auto px-4 py-4 bg-gray-800 bg-opacity-80 rounded-2xl shadow-lg text-gray-100">
   <!-- Widget Options Form -->
-  <form method="POST" action="/dashboard/widget" class="bg-white shadow p-4 rounded mb-6">
+  <form method="POST" action="/dashboard/widget" class="bg-gray-700 bg-opacity-90 shadow-lg p-6 rounded-xl mb-6 text-gray-100">
     <h2 class="text-lg font-semibold mb-2">Widget Options</h2>
     <div class="space-y-2">
       <label class="inline-flex items-center">
@@ -68,7 +69,7 @@
 
   <h2 class="text-lg font-semibold mb-2">Embed Standard Widget</h2>
   <div class="relative mb-4">
-    <pre id="embedCode" class="bg-gray-100 p-2 rounded overflow-x-auto"><%= `<iframe src=\"${embedUrl}\" style=\"width:100%;height:500px;border:none;\"></iframe>` %></pre>
+    <pre id="embedCode" class="bg-gray-800 bg-opacity-80 text-gray-100 p-2 rounded overflow-x-auto"><%= `<iframe src=\"${embedUrl}\" style=\"width:100%;height:500px;border:none;\"></iframe>` %></pre>
     <button id="copyEmbedBtn" class="absolute top-2 right-2 px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm" aria-label="Copy embed code">Copy</button>
   </div>
   <h2 class="text-lg font-semibold mb-2">Live Preview</h2>
@@ -92,4 +93,37 @@
       });
     });
   </script>
+  <script>
+    // Live preview: rebuild embed iframe on option changes
+    (function() {
+      const iframe = document.querySelector('iframe');
+      const pre = document.getElementById('embedCode');
+      const searchCb = document.querySelector('input[name="search"]');
+      const sortCb = document.querySelector('input[name="sort"]');
+      const categoryCb = document.querySelector('input[name="category"]');
+      const bgColorInput = document.getElementById('backgroundColor');
+      const captionBgInput = document.getElementById('captionBgColor');
+      const captionColorInput = document.getElementById('captionFontColor');
+      const fontFamilySelect = document.getElementById('captionFontFamily');
+      function updateEmbed() {
+        const baseUrl = iframe.src.split('?')[0];
+        const params = [];
+        params.push(`search=${searchCb.checked ? 1 : 0}`);
+        params.push(`sort=${sortCb.checked ? 1 : 0}`);
+        params.push(`category=${categoryCb.checked ? 1 : 0}`);
+        if (bgColorInput.value) params.push('bgColor=' + encodeURIComponent(bgColorInput.value));
+        if (captionBgInput.value) params.push('captionBgColor=' + encodeURIComponent(captionBgInput.value));
+        if (captionColorInput.value) params.push('captionFontColor=' + encodeURIComponent(captionColorInput.value));
+        if (fontFamilySelect.value) params.push('captionFontFamily=' + encodeURIComponent(fontFamilySelect.value));
+        const url = baseUrl + '?' + params.join('&');
+        iframe.src = url;
+        pre.textContent = `<iframe src="${url}" style="width:100%;height:500px;border:none;"></iframe>`;
+      }
+      [searchCb, sortCb, categoryCb, bgColorInput, captionBgInput, captionColorInput, fontFamilySelect].forEach(el => {
+        el.addEventListener('input', updateEmbed);
+        el.addEventListener('change', updateEmbed);
+      });
+    })();
+  </script>
+  </div>
 </div>

@@ -300,6 +300,16 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   if (req.query.bgColor) {
     widgetOpts.backgroundColor = req.query.bgColor;
   }
+  // Allow override of caption styling via query params
+  if (req.query.captionBgColor) {
+    widgetOpts.captionBgColor = req.query.captionBgColor;
+  }
+  if (req.query.captionFontColor) {
+    widgetOpts.captionFontColor = req.query.captionFontColor;
+  }
+  if (req.query.captionFontFamily) {
+    widgetOpts.captionFontFamily = req.query.captionFontFamily;
+  }
   // Track analytics: count views for this API key
   try {
     const analytics = loadAnalytics();

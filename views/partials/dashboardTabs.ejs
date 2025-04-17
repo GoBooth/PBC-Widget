@@ -1,12 +1,12 @@
-<div class="bg-gray-100 mb-4">
+<div class="bg-gray-900 mb-4">
   <div class="container mx-auto px-4 py-2 flex space-x-4">
-    <a href="/dashboard/widget" class="px-3 py-1 <%= activeTab==='widget' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Widget</a>
-    <a href="/dashboard/backdrops" class="px-3 py-1 <%= activeTab==='backdrops' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Backdrops</a>
-    <a href="/dashboard/account" class="px-3 py-1 <%= activeTab==='account' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Account</a>
-    <a href="/dashboard/help" class="px-3 py-1 <%= activeTab==='help' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Help</a>
-    <a href="/dashboard/analytics" class="px-3 py-1 <%= activeTab==='analytics' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Analytics</a>
+    <a href="/dashboard/widget" class="px-3 py-1 rounded-t <%= activeTab==='widget' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-800 transition-colors' %>">Widget</a>
+    <a href="/dashboard/backdrops" class="px-3 py-1 rounded-t <%= activeTab==='backdrops' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-800 transition-colors' %>">Backdrops</a>
+    <a href="/dashboard/account" class="px-3 py-1 rounded-t <%= activeTab==='account' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-800 transition-colors' %>">Account</a>
+    <a href="/dashboard/help" class="px-3 py-1 rounded-t <%= activeTab==='help' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-800 transition-colors' %>">Help</a>
+    <a href="/dashboard/analytics" class="px-3 py-1 rounded-t <%= activeTab==='analytics' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-800 transition-colors' %>">Analytics</a>
     <% if (currentUser && currentUser.isAdmin) { %>
-      <a href="/dashboard/admin" class="px-3 py-1 <%= activeTab==='admin' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Admin</a>
+      <a href="/dashboard/admin" class="px-3 py-1 rounded-t <%= activeTab==='admin' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-800 transition-colors' %>">Admin</a>
     <% } %>
   </div>
 </div>

@@ -1,34 +1,42 @@
 <%- include('partials/header') %>
 
-<div class="container mx-auto px-4 py-8 max-w-md">
-  <h1 class="text-2xl font-bold mb-4">Register</h1>
-  <% if (error) { %>
-    <div class="bg-red-100 text-red-700 p-2 mb-4 rounded"><%= error %></div>
-  <% } %>
-  <form method="POST" action="/register" class="space-y-4">
-    <div>
-      <label for="businessName" class="block mb-1">Business Name</label>
-      <input type="text" name="businessName" id="businessName" required class="w-full border px-2 py-1 rounded" />
-    </div>
-    <div>
-      <label for="username" class="block mb-1">Username</label>
-      <input type="text" name="username" id="username" required class="w-full border px-2 py-1 rounded" />
-    </div>
-    <div>
-      <label for="email" class="block mb-1">Email</label>
-      <input type="email" name="email" id="email" required class="w-full border px-2 py-1 rounded" />
-    </div>
-    <div>
-      <label for="password" class="block mb-1">Password</label>
-      <input type="password" name="password" id="password" required class="w-full border px-2 py-1 rounded" />
-    </div>
-    <div>
-      <label for="confirmPassword" class="block mb-1">Confirm Password</label>
-      <input type="password" name="confirmPassword" id="confirmPassword" required class="w-full border px-2 py-1 rounded" />
-    </div>
-    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Register</button>
-  </form>
-  <p class="mt-4 text-center">Already have an account? <a href="/login" class="text-blue-600">Login here</a>.</p>
-  <!-- Application version -->
-  <p class="mt-2 text-center text-gray-500 text-sm">Version: <%= version %></p>
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-black flex items-center justify-center p-4">
+  <div class="bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-md animate-pulse">
+    <h1 class="text-3xl text-white font-bold mb-6 text-center drop-shadow-lg">Register</h1>
+    <% if (error) { %>
+      <div class="bg-red-600 text-red-100 p-2 mb-4 rounded"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/register" class="space-y-4">
+      <div>
+        <label for="businessName" class="block mb-1 text-gray-200">Business Name</label>
+        <input type="text" name="businessName" id="businessName" required
+               class="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label for="username" class="block mb-1 text-gray-200">Username</label>
+        <input type="text" name="username" id="username" required
+               class="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label for="email" class="block mb-1 text-gray-200">Email</label>
+        <input type="email" name="email" id="email" required
+               class="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label for="password" class="block mb-1 text-gray-200">Password</label>
+        <input type="password" name="password" id="password" required
+               class="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div>
+        <label for="confirmPassword" class="block mb-1 text-gray-200">Confirm Password</label>
+        <input type="password" name="confirmPassword" id="confirmPassword" required
+               class="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg transition">Register</button>
+    </form>
+    <p class="mt-4 text-center text-gray-300">Already have an account? <a href="/login"
+       class="text-indigo-400 hover:text-indigo-200 transition">Login here</a>.</p>
+    <p class="mt-2 text-center text-gray-500 text-sm">Version: <%= version %></p>
+  </div>
 </div>
