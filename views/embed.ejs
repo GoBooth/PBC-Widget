@@ -15,9 +15,12 @@
   <!-- Caption styling -->
   <style>
     .caption {
-      <% if (widgetOpts.captionBgColor) { %>background-color: <%= widgetOpts.captionBgColor %>;<% } %>
-      <% if (widgetOpts.captionFontColor) { %>color: <%= widgetOpts.captionFontColor %>;<% } %>
-      <% if (widgetOpts.captionFontFamily) { %>font-family: '<%= widgetOpts.captionFontFamily %>';<% } %>
+      display: block;
+      width: 100%;
+      margin: 0;
+      <% if (widgetOpts.captionBgColor) { %>background-color: <%= widgetOpts.captionBgColor %> !important;<% } %>
+      <% if (widgetOpts.captionFontColor) { %>color: <%= widgetOpts.captionFontColor %> !important;<% } %>
+      <% if (widgetOpts.captionFontFamily) { %>font-family: <%= widgetOpts.captionFontFamily %>;<% } %>
       padding: 0.5rem;
       text-align: center;
     }
