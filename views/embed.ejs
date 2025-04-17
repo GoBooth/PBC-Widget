@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Choose Your Backdrop</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN & Config -->
+  <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>body { margin: 0; padding: 0; }</style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body id="bodyEl" class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
 
   <div class="max-w-7xl mx-auto p-6">
     <h1 class="text-4xl font-bold mb-4 text-center">Choose Your Backdrop</h1>
@@ -16,7 +17,7 @@
     <div class="mb-6">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <!-- Search -->
-        <input id="searchInput" type="text" placeholder="Search backdrops..." 
+      <input id="searchInput" type="text" placeholder="Search backdrops..." aria-label="Search backdrops" 
                class="flex-1 px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring" />
         <!-- Sort -->
         <div class="flex items-center space-x-2">
@@ -36,12 +37,15 @@
             <% }); %>
           </select>
         </div>
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="px-3 py-2 bg-gray-800 text-white rounded hover:bg-gray-700" aria-label="Toggle dark mode">Dark Mode</button>
       </div>
     </div>
     <!-- Gallery -->
     <div id="gallery" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <% backdrops.forEach(b => { %>
-        <div class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-gray-200 cursor-pointer animate-pulse" 
+        <div role="button" tabindex="0" aria-label="View <%= b.name %> backdrop"
+             class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-gray-200 dark:bg-gray-700 cursor-pointer animate-pulse"
              data-url="<%= b.url %>" data-name="<%= b.name %>">
           <img src="<%= b.url %>" alt="<%= b.name %>" loading="lazy"
                class="w-full h-48 object-cover opacity-0 transition-opacity duration-500" />
@@ -54,7 +58,8 @@
   </div>
 
   <!-- Lightbox Modal -->
-  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+  <div id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title"
+       class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
     <div class="relative bg-white rounded-lg overflow-hidden w-full max-w-md md:max-w-lg mx-auto">
       <button id="close" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
       <img id="lightbox-img" src="" class="w-full h-auto" alt="Backdrop" />
@@ -109,7 +114,7 @@
       const onLoad = () => {
         img.classList.remove('opacity-0');
         card.classList.remove('animate-pulse', 'bg-gray-200');
-        card.classList.add('bg-white');
+        card.classList.add('bg-white', 'dark:bg-gray-800');
       };
       img.addEventListener('load', onLoad);
       // If already loaded (cache), remove skeleton immediately
@@ -123,6 +128,18 @@
         lightboxEl.classList.add('opacity-0', 'pointer-events-none');
       }
     });
+  // Dark mode toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const bodyEl = document.getElementById('bodyEl');
+  // Initialize theme
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') bodyEl.classList.add('dark');
+  themeToggle.textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+  themeToggle.addEventListener('click', () => {
+    const isDark = bodyEl.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  });
   </script>
 </body>
 </html>

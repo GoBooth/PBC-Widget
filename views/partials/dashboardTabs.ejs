@@ -4,6 +4,7 @@
     <a href="/dashboard/backdrops" class="px-3 py-1 <%= activeTab==='backdrops' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Backdrops</a>
     <a href="/dashboard/account" class="px-3 py-1 <%= activeTab==='account' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Account</a>
     <a href="/dashboard/help" class="px-3 py-1 <%= activeTab==='help' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Help</a>
+    <a href="/dashboard/analytics" class="px-3 py-1 <%= activeTab==='analytics' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Analytics</a>
     <% if (currentUser && currentUser.isAdmin) { %>
       <a href="/dashboard/admin" class="px-3 py-1 <%= activeTab==='admin' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-200' %> rounded">Admin</a>
     <% } %>

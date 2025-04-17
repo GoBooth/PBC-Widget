@@ -10,13 +10,24 @@ const PORT = process.env.PORT || 3000;
 
 const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
-const BACKDROPS_FILE = path.join(DATA_DIR, 'backdrops.json');
+const ANALYTICS_FILE = path.join(DATA_DIR, 'analytics.json');
+// (Unused) const BACKDROPS_FILE = path.join(DATA_DIR, 'backdrops.json');
 // Path to user-uploaded/backdrop images in public folder
 const PHOTOS_DIR = path.join(__dirname, 'public', 'Backdrop_photos');
 
 function loadJSON(file) {
   if (!fs.existsSync(file)) return [];
   return JSON.parse(fs.readFileSync(file));
+}
+
+// Load analytics data (views, selections) per API key
+function loadAnalytics() {
+  if (!fs.existsSync(ANALYTICS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(ANALYTICS_FILE));
+}
+
+function saveAnalytics(data) {
+  fs.writeFileSync(ANALYTICS_FILE, JSON.stringify(data, null, 2));
 }
 
 function saveJSON(file, data) {
@@ -108,6 +119,16 @@ app.get('/dashboard/widget', ensureAuth, (req, res) => {
   const embedUrl = `${req.protocol}://${host}/embed/v1/${res.locals.currentUser.apiKey}`;
   res.render('dashboard/widget', { activeTab: 'widget', embedUrl });
 });
+// Regenerate API key
+app.post('/dashboard/widget/regenerate', ensureAuth, (req, res) => {
+  const users = loadJSON(USERS_FILE);
+  const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
+  if (idx !== -1) {
+    users[idx].apiKey = uuidv4();
+    saveJSON(USERS_FILE, users);
+  }
+  res.redirect('/dashboard/widget');
+});
 
 // Backdrops (dynamically scan public/Backdrop_photos)
 app.get('/dashboard/backdrops', ensureAuth, (req, res) => {
@@ -153,6 +174,15 @@ app.post('/dashboard/account', ensureAuth, async (req, res) => {
 // Help
 app.get('/dashboard/help', ensureAuth, (req, res) => {
   res.render('dashboard/help', { activeTab: 'help' });
+});
+// Analytics
+app.get('/dashboard/analytics', ensureAuth, (req, res) => {
+  // Load per-API-key analytics
+  let stats = {};
+  try { stats = loadAnalytics(); } catch (e) { console.error('Analytics load error:', e); }
+  const userKey = res.locals.currentUser.apiKey;
+  const data = stats[userKey] || { views: 0 };
+  res.render('dashboard/analytics', { activeTab: 'analytics', stats: data });
 });
 
 // Admin
@@ -201,6 +231,15 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   }));
   // Derive simple categories (first word of name) for filtering
   const categories = [...new Set(backdrops.map(b => b.name.split(' ')[0]))].sort();
+  // Track analytics: count views for this API key
+  try {
+    const analytics = loadAnalytics();
+    analytics[apiKey] = analytics[apiKey] || { views: 0 };
+    analytics[apiKey].views++;
+    saveAnalytics(analytics);
+  } catch (e) {
+    console.error('Analytics update error:', e);
+  }
   res.render('embed', { backdrops, categories });
 });
 // 404 handler

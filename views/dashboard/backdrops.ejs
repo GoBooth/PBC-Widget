@@ -3,6 +3,14 @@
 
 <div class="container mx-auto px-4 py-4">
   <h1 class="text-2xl font-bold mb-4">Select Backdrops</h1>
+  <!-- Selection Controls -->
+  <div class="flex items-center justify-between mb-4">
+    <div>Selected: <span id="selectionCount" class="font-semibold">0</span></div>
+    <div class="space-x-2">
+      <button type="button" id="selectAllBtn" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Select All</button>
+      <button type="button" id="selectNoneBtn" class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Select None</button>
+    </div>
+  </div>
   <form method="POST" class="space-y-4">
     <div class="grid grid-cols-4 gap-4">
       <% backdrops.forEach(b => { %>
@@ -14,4 +22,25 @@
     </div>
     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save Selection</button>
   </form>
+  <script>
+    const checkboxes = Array.from(document.querySelectorAll('input[name="selected"]'));
+    const countEl = document.getElementById('selectionCount');
+    const updateCount = () => {
+      const count = checkboxes.filter(cb => cb.checked).length;
+      countEl.textContent = count;
+    };
+    // Initial count
+    updateCount();
+    // Listen for changes
+    checkboxes.forEach(cb => cb.addEventListener('change', updateCount));
+    // Select All/None buttons
+    document.getElementById('selectAllBtn').addEventListener('click', () => {
+      checkboxes.forEach(cb => cb.checked = true);
+      updateCount();
+    });
+    document.getElementById('selectNoneBtn').addEventListener('click', () => {
+      checkboxes.forEach(cb => cb.checked = false);
+      updateCount();
+    });
+  </script>
 </div>

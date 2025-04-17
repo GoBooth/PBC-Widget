@@ -3,13 +3,41 @@
 
 <div class="container mx-auto px-4 py-4">
   <h1 class="text-2xl font-bold mb-4">Widget</h1>
-  <p>Your unique API key:</p>
-  <code class="block bg-gray-100 p-2 rounded mb-4"><%= currentUser.apiKey %></code>
+  <div class="mb-4">
+    <p class="font-medium">Your unique API key:</p>
+    <div class="flex items-center space-x-2">
+      <code id="apiKey" class="flex-1 bg-gray-100 p-2 rounded"><%= currentUser.apiKey %></code>
+      <button id="copyKeyBtn" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600" aria-label="Copy API key">Copy</button>
+      <form method="POST" action="/dashboard/widget/regenerate">
+        <button type="submit" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600" aria-label="Regenerate API key">Regenerate Key</button>
+      </form>
+    </div>
+  </div>
 
   <h2 class="text-lg font-semibold mb-2">Embed Standard Widget</h2>
-  <pre class="bg-gray-100 p-2 rounded mb-4"><%= `<iframe src="${embedUrl}" style="width:100%;height:500px;border:none;"></iframe>` %></pre>
+  <div class="relative mb-4">
+    <pre id="embedCode" class="bg-gray-100 p-2 rounded overflow-x-auto"><%= `<iframe src=\"${embedUrl}\" style=\"width:100%;height:500px;border:none;\"></iframe>` %></pre>
+    <button id="copyEmbedBtn" class="absolute top-2 right-2 px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm" aria-label="Copy embed code">Copy</button>
+  </div>
   <h2 class="text-lg font-semibold mb-2">Live Preview</h2>
   <div class="mb-4">
     <iframe src="<%= embedUrl %>" style="width:100%;height:500px;border:none;" class="rounded-lg shadow"></iframe>
   </div>
+  <script>
+    // Copy API key
+    document.getElementById('copyKeyBtn').addEventListener('click', () => {
+      const keyEl = document.getElementById('apiKey');
+      navigator.clipboard.writeText(keyEl.textContent.trim()).then(() => {
+        alert('API key copied to clipboard');
+      });
+    });
+    // Copy embed snippet
+    document.getElementById('copyEmbedBtn').addEventListener('click', () => {
+      const pre = document.getElementById('embedCode');
+      const text = pre.textContent;
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        alert('Embed code copied to clipboard');
+      });
+    });
+  </script>
 </div>
