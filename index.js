@@ -113,11 +113,37 @@ function ensureAuth(req, res, next) {
 app.get('/dashboard', ensureAuth, (req, res) => res.redirect('/dashboard/widget'));
 
 // Widget page
+// Widget page
 app.get('/dashboard/widget', ensureAuth, (req, res) => {
-  // Construct the embed URL for the iframe widget
   const host = req.get('host');
-  const embedUrl = `${req.protocol}://${host}/embed/v1/${res.locals.currentUser.apiKey}`;
-  res.render('dashboard/widget', { activeTab: 'widget', embedUrl });
+  // Load user widget options (default to showing controls)
+  const defaultOpts = { search: true, sort: true, category: true, customCss: '' };
+  const opts = Object.assign({}, defaultOpts, res.locals.currentUser.widgetOptions || {});
+  // Build embed URL with query flags for controls
+  const baseUrl = `${req.protocol}://${host}/embed/v1/${res.locals.currentUser.apiKey}`;
+  const params = [];
+  if (opts.search) params.push('search=1'); else params.push('search=0');
+  if (opts.sort)   params.push('sort=1');   else params.push('sort=0');
+  if (opts.category) params.push('category=1'); else params.push('category=0');
+  const embedUrl = `${baseUrl}?${params.join('&')}`;
+  res.render('dashboard/widget', { activeTab: 'widget', embedUrl, widgetOpts: opts });
+});
+// Regenerate API key
+// Save widget display options
+app.post('/dashboard/widget', ensureAuth, (req, res) => {
+  const { search, sort, category, customCss } = req.body;
+  const users = loadJSON(USERS_FILE);
+  const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
+  if (idx !== -1) {
+    users[idx].widgetOptions = {
+      search: !!search,
+      sort:   !!sort,
+      category: !!category,
+      customCss: customCss || ''
+    };
+    saveJSON(USERS_FILE, users);
+  }
+  res.redirect('/dashboard/widget');
 });
 // Regenerate API key
 app.post('/dashboard/widget/regenerate', ensureAuth, (req, res) => {
@@ -139,13 +165,17 @@ app.get('/dashboard/backdrops', ensureAuth, (req, res) => {
       .map(file => ({ id: file, url: `/Backdrop_photos/${file}` }));
   }
   const selected = res.locals.currentUser.selectedBackdrops || [];
-  res.render('dashboard/backdrops', { activeTab: 'backdrops', backdrops, selectedBackdrops: selected });
+  const overrideNames = res.locals.currentUser.backdropNames || {};
+  res.render('dashboard/backdrops', { activeTab: 'backdrops', backdrops, selectedBackdrops: selected, overrideNames });
 });
 app.post('/dashboard/backdrops', ensureAuth, (req, res) => {
   const selected = req.body.selected || [];
   const users = loadJSON(USERS_FILE);
   const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
   users[idx].selectedBackdrops = Array.isArray(selected) ? selected : [selected];
+  // Save custom override names
+  const overrideNames = req.body.overrideNames || {};
+  users[idx].backdropNames = overrideNames;
   saveJSON(USERS_FILE, users);
   res.redirect('/dashboard/backdrops');
 });
@@ -231,6 +261,14 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   }));
   // Derive simple categories (first word of name) for filtering
   const categories = [...new Set(backdrops.map(b => b.name.split(' ')[0]))].sort();
+  // Get widget options from user, with defaults
+  const defaultOpts = { search: true, sort: true, category: true, customCss: '' };
+  const widgetOpts = Object.assign({}, defaultOpts, user.widgetOptions || {});
+  // Allow query to override controls (1 = show, 0 = hide)
+  ['search', 'sort', 'category'].forEach(opt => {
+    if (req.query[opt] === '1') widgetOpts[opt] = true;
+    if (req.query[opt] === '0') widgetOpts[opt] = false;
+  });
   // Track analytics: count views for this API key
   try {
     const analytics = loadAnalytics();
@@ -240,7 +278,7 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   } catch (e) {
     console.error('Analytics update error:', e);
   }
-  res.render('embed', { backdrops, categories });
+  res.render('embed', { backdrops, categories, widgetOpts });
 });
 // 404 handler
 app.use((req, res) => {

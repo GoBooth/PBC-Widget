@@ -16,7 +16,15 @@
       <% backdrops.forEach(b => { %>
         <label class="block border p-2 rounded <%= selectedBackdrops.includes(b.id) ? 'border-green-500' : 'border-gray-300' %>">
           <img src="<%= b.url %>" alt="Backdrop" class="w-full h-auto mb-2" />
-          <input type="checkbox" name="selected" value="<%= b.id %>" <%= selectedBackdrops.includes(b.id) ? 'checked' : '' %> />
+          <!-- Default Name -->
+          <div class="mb-1 text-center font-medium"><%= b.id.replace(/\.[^/.]+$/, '') %></div>
+          <!-- Override Name -->
+          <input type="text" name="overrideNames[<%= b.id %>]" value="<%= overrideNames[b.id] || '' %>"
+                 placeholder="Custom name" class="w-full border px-1 py-1 rounded mb-2 text-sm" />
+          <!-- Selection Checkbox -->
+          <div class="text-center">
+            <input type="checkbox" name="selected" value="<%= b.id %>" <%= selectedBackdrops.includes(b.id) ? 'checked' : '' %> />
+          </div>
         </label>
       <% }) %>
     </div>
