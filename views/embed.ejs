@@ -82,6 +82,7 @@
     </div>
   </div>
 
+  <% if (widgetOpts.allowEmail) { %>
   <!-- Selection Modal -->
   <div id="lightbox" role="dialog" aria-modal="true"
        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
@@ -155,7 +156,8 @@
           alert('Error sending selection. Please try again.');
         });
     });
-    // Filter & Sort Controls
+  <% } %>
+  // Filter & Sort Controls
     const gallery = document.getElementById('gallery');
     const cards = Array.from(gallery.querySelectorAll('[data-url]'));
     const searchInput = document.getElementById('searchInput');

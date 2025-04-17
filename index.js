@@ -308,11 +308,17 @@ app.get('/embed/v1/:apiKey', (req, res) => {
     search: true,
     sort: true,
     category: true,
+    showAll: false,
     customCss: '',
     backgroundColor: '',
     captionBgColor: '',
     captionFontFamily: '',
-    captionFontColor: ''
+    captionFontColor: '',
+    allowEmail: false,
+    selectionTitle: "Couldn't have chosen better!",
+    selectionDescription: 'Please provide your email, then select “Submit” to complete.',
+    submitButtonText: 'Submit',
+    thankYouMessage: 'Your backdrop choice is confirmed—thank you!'
   };
   const widgetOpts = Object.assign({}, defaultOpts, user.widgetOptions || {});
   // Allow override of background color via query param
@@ -329,6 +335,13 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   if (req.query.captionFontFamily) {
     widgetOpts.captionFontFamily = req.query.captionFontFamily;
   }
+  // Allow override of email selection options via query params
+  if (req.query.allowEmail === '1') widgetOpts.allowEmail = true;
+  if (req.query.allowEmail === '0') widgetOpts.allowEmail = false;
+  if (req.query.selectionTitle) widgetOpts.selectionTitle = req.query.selectionTitle;
+  if (req.query.selectionDescription) widgetOpts.selectionDescription = req.query.selectionDescription;
+  if (req.query.submitButtonText) widgetOpts.submitButtonText = req.query.submitButtonText;
+  if (req.query.thankYouMessage) widgetOpts.thankYouMessage = req.query.thankYouMessage;
   // Track analytics: count views for this API key
   try {
     const analytics = loadAnalytics();
