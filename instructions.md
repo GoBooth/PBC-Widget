@@ -27,7 +27,7 @@
 					   3. Submit Button
 					   4. Thank you Message
 					   5. How many items to load (Default 40) (Drop down menu) options are 10, 20, 30, 40, 50, 60
-					   6. Example: <iframe src="https://widget.photobotohdecor.com/embed/v1/3479e11c-1e19-42e5-8655-826131e0fc8a?&title=my events title&submit=click me&thanks=Thank you so much, your chosen backdrop choice has been sent.&chunks=50" style="width:100%;height:700px;border:none;"></iframe>
+					   6. Example: <iframe src="https://widget.photoboohdecor.com/embed/v1/3479e11c-1e19-42e5-8655-826131e0fc8a?&title=my events title&submit=click me&thanks=Thank you so much, your chosen backdrop choice has been sent.&chunks=50" style="width:100%;height:700px;border:none;"></iframe>
 		2. BACKDROP PAGE:
 			1. Here it will display all a thumbnail grid of all the backdrop images
 			2. there will be a "search bar" at the top 
