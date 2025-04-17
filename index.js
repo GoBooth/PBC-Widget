@@ -32,6 +32,9 @@ app.use(session({
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+// Expose app version to all views for display
+const { version } = require('./package.json');
+app.locals.version = version;
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Expose currentUser to all views
