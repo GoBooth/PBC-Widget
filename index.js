@@ -100,7 +100,10 @@ app.get('/dashboard', ensureAuth, (req, res) => res.redirect('/dashboard/widget'
 
 // Widget page
 app.get('/dashboard/widget', ensureAuth, (req, res) => {
-  res.render('dashboard/widget', { activeTab: 'widget' });
+  // Construct the embed URL for the iframe widget
+  const host = req.get('host');
+  const embedUrl = `${req.protocol}://${host}/embed/v1/${res.locals.currentUser.apiKey}`;
+  res.render('dashboard/widget', { activeTab: 'widget', embedUrl });
 });
 
 // Backdrops (dynamically scan public/Backdrop_photos)
@@ -172,6 +175,25 @@ app.post('/dashboard/admin/delete', ensureAuth, (req, res) => {
   res.redirect('/dashboard/admin');
 });
 
+// 404 handler
+// Embed widget route (public-facing)
+app.get('/embed/v1/:apiKey', (req, res) => {
+  const apiKey = req.params.apiKey;
+  const users = loadJSON(USERS_FILE);
+  const user = users.find(u => u.apiKey === apiKey);
+  if (!user) return res.status(404).send('Invalid API key');
+  // Collect selected backdrops or all if none selected
+  let files = [];
+  if (fs.existsSync(PHOTOS_DIR)) {
+    files = fs.readdirSync(PHOTOS_DIR)
+      .filter(f => /\.(jpe?g|png|gif)$/i.test(f));
+    if (user.selectedBackdrops && user.selectedBackdrops.length) {
+      files = files.filter(f => user.selectedBackdrops.includes(f));
+    }
+  }
+  const backdrops = files.map(f => `/Backdrop_photos/${f}`);
+  res.render('embed', { backdrops });
+});
 // 404 handler
 app.use((req, res) => {
   res.status(404).send('Not Found');

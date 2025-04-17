@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Widget</title>
+  <link href="/css/styles.css" rel="stylesheet" />
+  <style>body { margin: 0; padding: 0; }</style>
+</head>
+<body class="bg-white">
+  <div class="grid grid-cols-3 gap-2 p-2">
+    <% backdrops.forEach(url => { %>
+      <div class="overflow-hidden rounded">
+        <img src="<%= url %>" alt="Backdrop" class="w-full h-32 object-cover" />
+      </div>
+    <% }); %>
+  </div>
+</body>
+</html>
