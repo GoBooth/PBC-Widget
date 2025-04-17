@@ -117,21 +117,22 @@ app.get('/dashboard', ensureAuth, (req, res) => res.redirect('/dashboard/widget'
 app.get('/dashboard/widget', ensureAuth, (req, res) => {
   const host = req.get('host');
   // Load user widget options (default to showing controls)
-  const defaultOpts = { search: true, sort: true, category: true, customCss: '' };
+  const defaultOpts = { search: true, sort: true, category: true, customCss: '', backgroundColor: '' };
   const opts = Object.assign({}, defaultOpts, res.locals.currentUser.widgetOptions || {});
   // Build embed URL with query flags for controls
   const baseUrl = `${req.protocol}://${host}/embed/v1/${res.locals.currentUser.apiKey}`;
   const params = [];
-  if (opts.search) params.push('search=1'); else params.push('search=0');
-  if (opts.sort)   params.push('sort=1');   else params.push('sort=0');
-  if (opts.category) params.push('category=1'); else params.push('category=0');
+  if (opts.search)    params.push('search=1');     else params.push('search=0');
+  if (opts.sort)      params.push('sort=1');       else params.push('sort=0');
+  if (opts.category)  params.push('category=1');   else params.push('category=0');
+  if (opts.backgroundColor) params.push(`bgColor=${encodeURIComponent(opts.backgroundColor)}`);
   const embedUrl = `${baseUrl}?${params.join('&')}`;
   res.render('dashboard/widget', { activeTab: 'widget', embedUrl, widgetOpts: opts });
 });
 // Regenerate API key
 // Save widget display options
 app.post('/dashboard/widget', ensureAuth, (req, res) => {
-  const { search, sort, category, customCss } = req.body;
+  const { search, sort, category, customCss, backgroundColor } = req.body;
   const users = loadJSON(USERS_FILE);
   const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
   if (idx !== -1) {
@@ -139,7 +140,8 @@ app.post('/dashboard/widget', ensureAuth, (req, res) => {
       search: !!search,
       sort:   !!sort,
       category: !!category,
-      customCss: customCss || ''
+      customCss: customCss || '',
+      backgroundColor: backgroundColor || ''
     };
     saveJSON(USERS_FILE, users);
   }
@@ -254,21 +256,29 @@ app.get('/embed/v1/:apiKey', (req, res) => {
       files = files.filter(f => user.selectedBackdrops.includes(f));
     }
   }
-  // Prepare backdrops with URL and display name
-  const backdrops = files.map(f => ({
-    url: encodeURI(`/Backdrop_photos/${f}`),
-    name: f.replace(/\.[^/.]+$/, '')
-  }));
+  // Prepare backdrops with URL and display name (apply any user overrides)
+  const overrideNames = (user.backdropNames && typeof user.backdropNames === 'object') ? user.backdropNames : {};
+  const backdrops = files.map(f => {
+    const defaultName = f.replace(/\.[^/.]+$/, '');
+    return {
+      url: encodeURI(`/Backdrop_photos/${f}`),
+      name: overrideNames[f] || defaultName
+    };
+  });
   // Derive simple categories (first word of name) for filtering
   const categories = [...new Set(backdrops.map(b => b.name.split(' ')[0]))].sort();
   // Get widget options from user, with defaults
-  const defaultOpts = { search: true, sort: true, category: true, customCss: '' };
+  const defaultOpts = { search: true, sort: true, category: true, customCss: '', backgroundColor: '' };
   const widgetOpts = Object.assign({}, defaultOpts, user.widgetOptions || {});
   // Allow query to override controls (1 = show, 0 = hide)
   ['search', 'sort', 'category'].forEach(opt => {
     if (req.query[opt] === '1') widgetOpts[opt] = true;
     if (req.query[opt] === '0') widgetOpts[opt] = false;
   });
+  // Allow override of background color via query param
+  if (req.query.bgColor) {
+    widgetOpts.backgroundColor = req.query.bgColor;
+  }
   // Track analytics: count views for this API key
   try {
     const analytics = loadAnalytics();

@@ -13,7 +13,8 @@
     <style><%= widgetOpts.customCss %></style>
   <% } %>
 </head>
-<body id="bodyEl" class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+<body id="bodyEl" class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans"
+      <% if (widgetOpts.backgroundColor) { %> style="background-color:<%= widgetOpts.backgroundColor %>;"<% } %>>
 
   <div class="max-w-7xl mx-auto p-6">
     <h1 class="text-4xl font-bold mb-4 text-center">Choose Your Backdrop</h1>
@@ -53,7 +54,7 @@
     </div>
     <!-- Gallery -->
     <div id="gallery" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      <% backdrops.forEach(b => { %>
+    <% backdrops.forEach(b => { %>
         <div role="button" tabindex="0" aria-label="View <%= b.name %> backdrop"
              class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-gray-200 dark:bg-gray-700 cursor-pointer animate-pulse"
              data-url="<%= b.url %>" data-name="<%= b.name %>">
