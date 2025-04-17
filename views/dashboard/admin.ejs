@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<%- include('../partials/dashboardTabs') %>
+
+<div class="container mx-auto px-4 py-4">
+  <h1 class="text-2xl font-bold mb-4">Admin Panel</h1>
+  <h2 class="text-lg font-semibold mb-2">Manage Backdrops</h2>
+  <form method="POST" action="/dashboard/admin/delete" class="grid grid-cols-4 gap-4 mb-4">
+    <% backdrops.forEach(b => { %>
+      <div class="relative border rounded overflow-hidden">
+        <img src="<%= b.url %>" alt="Backdrop" class="w-full h-auto" />
+        <input type="hidden" name="id" value="<%= b.id %>" />
+        <button type="submit" class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
+      </div>
+    <% }) %>
+  </form>
+</div>

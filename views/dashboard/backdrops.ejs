@@ -1,0 +1,17 @@
+<%- include('../partials/header') %>
+<%- include('../partials/dashboardTabs') %>
+
+<div class="container mx-auto px-4 py-4">
+  <h1 class="text-2xl font-bold mb-4">Select Backdrops</h1>
+  <form method="POST" class="space-y-4">
+    <div class="grid grid-cols-4 gap-4">
+      <% backdrops.forEach(b => { %>
+        <label class="block border p-2 rounded <%= selectedBackdrops.includes(b.id) ? 'border-green-500' : 'border-gray-300' %>">
+          <img src="<%= b.url %>" alt="Backdrop" class="w-full h-auto mb-2" />
+          <input type="checkbox" name="selected" value="<%= b.id %>" <%= selectedBackdrops.includes(b.id) ? 'checked' : '' %> />
+        </label>
+      <% }) %>
+    </div>
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save Selection</button>
+  </form>
+</div>

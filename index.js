@@ -150,25 +150,25 @@ app.get('/dashboard/help', ensureAuth, (req, res) => {
 });
 
 // Admin
+// Admin: manage files in public/Backdrop_photos
 app.get('/dashboard/admin', ensureAuth, (req, res) => {
   if (!res.locals.currentUser.isAdmin) return res.redirect('/dashboard/widget');
-  const backdrops = loadJSON(BACKDROPS_FILE);
+  let backdrops = [];
+  if (fs.existsSync(PHOTOS_DIR)) {
+    backdrops = fs.readdirSync(PHOTOS_DIR)
+      .filter(file => /\.(jpe?g|png|gif)$/i.test(file))
+      .map(file => ({ id: file, url: `/Backdrop_photos/${file}` }));
+  }
   res.render('dashboard/admin', { activeTab: 'admin', backdrops });
 });
-app.post('/dashboard/admin', ensureAuth, (req, res) => {
-  if (!res.locals.currentUser.isAdmin) return res.redirect('/dashboard/widget');
-  const { url } = req.body;
-  const backdrops = loadJSON(BACKDROPS_FILE);
-  backdrops.push({ id: uuidv4(), url });
-  saveJSON(BACKDROPS_FILE, backdrops);
-  res.redirect('/dashboard/admin');
-});
+// Delete a backdrop file
 app.post('/dashboard/admin/delete', ensureAuth, (req, res) => {
   if (!res.locals.currentUser.isAdmin) return res.redirect('/dashboard/widget');
   const { id } = req.body;
-  let backdrops = loadJSON(BACKDROPS_FILE);
-  backdrops = backdrops.filter(b => b.id !== id);
-  saveJSON(BACKDROPS_FILE, backdrops);
+  const filePath = path.join(PHOTOS_DIR, id);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
   res.redirect('/dashboard/admin');
 });
 

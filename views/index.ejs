@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to My App</title>
-  <link href="/css/styles.css" rel="stylesheet" />
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="text-center p-6 bg-white rounded shadow-md">
-    <h1 class="text-5xl font-bold mb-4">Welcome to My App</h1>
-    <p class="text-xl">This is a Node.js + Express + EJS + TailwindCSS starter app.</p>
+<%- include('partials/header') %>
+<div class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="text-center p-6 bg-white rounded shadow-md space-y-4">
+    <h1 class="text-5xl font-bold mb-4">Welcome to Photobooth Widget</h1>
+    <p class="text-xl">Quickly configure and embed your photo widget.</p>
+    <div class="space-x-4">
+      <% if (!currentUser) { %>
+        <a href="/register" class="px-4 py-2 bg-blue-600 text-white rounded">Register</a>
+        <a href="/login" class="px-4 py-2 bg-gray-200 text-gray-800 rounded">Login</a>
+      <% } else { %>
+        <a href="/dashboard/widget" class="px-4 py-2 bg-blue-600 text-white rounded">Go to Dashboard</a>
+      <% } %>
+    </div>
   </div>
-</body>
-</html>
+</div>

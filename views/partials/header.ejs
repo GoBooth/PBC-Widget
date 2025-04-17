@@ -1,0 +1,15 @@
+<nav class="bg-white shadow mb-6">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <a href="/" class="text-xl font-bold">Photobooth Widget</a>
+    <div>
+      <% if (currentUser) { %>
+        <span class="mr-4">Hello, <%= currentUser.username %></span>
+        <a href="/dashboard/widget" class="mr-4 text-blue-600">Dashboard</a>
+        <a href="/logout" class="text-red-600">Logout</a>
+      <% } else { %>
+        <a href="/login" class="mr-4 text-blue-600">Login</a>
+        <a href="/register" class="text-blue-600">Register</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
