@@ -191,7 +191,11 @@ app.get('/embed/v1/:apiKey', (req, res) => {
       files = files.filter(f => user.selectedBackdrops.includes(f));
     }
   }
-  const backdrops = files.map(f => `/Backdrop_photos/${f}`);
+  // Prepare backdrops with URL and display name
+  const backdrops = files.map(f => ({
+    url: encodeURI(`/Backdrop_photos/${f}`),
+    name: f.replace(/\.[^/.]+$/, '')
+  }));
   res.render('embed', { backdrops });
 });
 // 404 handler
