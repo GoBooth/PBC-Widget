@@ -6,6 +6,17 @@ const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
+// Email sending for backdrop selection (configure via env vars SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS)
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT, 10) || 587,
+  secure: process.env.SMTP_SECURE === 'true',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
 const PORT = process.env.PORT || 3000;
 
 const DATA_DIR = path.join(__dirname, 'data');
@@ -126,7 +137,11 @@ app.get('/dashboard/widget', ensureAuth, (req, res) => {
     backgroundColor: '',
     captionBgColor: '',
     captionFontFamily: '',
-    captionFontColor: ''
+    captionFontColor: '',
+    selectionTitle: 'Couldn\'t have chosen better!',
+    selectionDescription: 'Please provide your email, then select “Submit” to complete.',
+    submitButtonText: 'Submit',
+    thankYouMessage: 'Your backdrop choice is confirmed—thank you!'
   };
   const opts = Object.assign({}, defaultOpts, res.locals.currentUser.widgetOptions || {});
   // Build embed URL with query flags for controls
@@ -143,7 +158,8 @@ app.get('/dashboard/widget', ensureAuth, (req, res) => {
 // Regenerate API key
 // Save widget display options
 app.post('/dashboard/widget', ensureAuth, (req, res) => {
-  const { search, sort, category, showAll, customCss, backgroundColor, captionBgColor, captionFontFamily, captionFontColor } = req.body;
+  const { search, sort, category, showAll, customCss, backgroundColor, captionBgColor, captionFontFamily, captionFontColor,
+          selectionTitle, selectionDescription, submitButtonText, thankYouMessage } = req.body;
   const users = loadJSON(USERS_FILE);
   const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
   if (idx !== -1) {
@@ -156,7 +172,11 @@ app.post('/dashboard/widget', ensureAuth, (req, res) => {
       backgroundColor: backgroundColor || '',
       captionBgColor: captionBgColor || '',
       captionFontFamily: captionFontFamily || '',
-      captionFontColor: captionFontColor || ''
+      captionFontColor: captionFontColor || '',
+      selectionTitle: selectionTitle || '',
+      selectionDescription: selectionDescription || '',
+      submitButtonText: submitButtonText || '',
+      thankYouMessage: thankYouMessage || ''
     };
     saveJSON(USERS_FILE, users);
   }
@@ -318,7 +338,29 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   } catch (e) {
     console.error('Analytics update error:', e);
   }
-  res.render('embed', { backdrops, categories, widgetOpts });
+  res.render('embed', { backdrops, categories, widgetOpts, apiKey });
+});
+// Handle backdrop selection submissions from embed widget
+app.post('/embed/v1/:apiKey/selection', express.json(), (req, res) => {
+  const apiKey = req.params.apiKey;
+  const users = loadJSON(USERS_FILE);
+  const user = users.find(u => u.apiKey === apiKey);
+  if (!user) return res.status(404).json({ success: false, error: 'Invalid API key' });
+  const { backdropUrl, backdropName, name, email } = req.body;
+  // Send email to the widget owner
+  const mailOptions = {
+    from: process.env.SMTP_FROM || 'no-reply@example.com',
+    to: user.email,
+    subject: `Backdrop selection from ${email || 'unknown'}`,
+    text: `Backdrop: ${backdropName}\nURL: ${backdropUrl}\nName: ${name || 'N/A'}\nEmail: ${email || 'N/A'}`
+  };
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Selection email error:', err);
+      return res.status(500).json({ success: false, error: 'Failed to send email' });
+    }
+    res.json({ success: true });
+  });
 });
 // 404 handler
 app.use((req, res) => {

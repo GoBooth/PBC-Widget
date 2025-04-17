@@ -24,6 +24,11 @@
       text-align: center;
     }
   </style>
+  <!-- Expose widget options and API key to client -->
+  <script>
+    window.widgetOpts = <%- JSON.stringify(widgetOpts) %>;
+    window.apiKey = '<%= apiKey %>';
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans"
       <% if (widgetOpts.backgroundColor) { %> style="background-color:<%= widgetOpts.backgroundColor %>;"<% } %>>
@@ -77,31 +82,79 @@
     </div>
   </div>
 
-  <!-- Lightbox Modal -->
-  <div id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title"
+  <!-- Selection Modal -->
+  <div id="lightbox" role="dialog" aria-modal="true"
        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="relative bg-white rounded-lg overflow-hidden w-full max-w-md md:max-w-lg mx-auto">
+    <div class="relative bg-white rounded-lg overflow-hidden w-full max-w-md md:max-w-lg mx-auto p-6">
       <button id="close" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
-      <img id="lightbox-img" src="" class="w-full h-auto" alt="Backdrop" />
-      <p id="lightbox-title" class="p-4 text-center font-semibold text-xl"></p>
+      <h2 id="modalTitle" class="text-xl font-semibold text-center mb-2"></h2>
+      <p id="modalDescription" class="text-center text-sm mb-4"></p>
+      <img id="lightbox-img" src="" class="w-full h-auto mb-4 rounded" alt="Backdrop" />
+      <form id="selectionForm" class="space-y-3">
+        <div>
+          <label for="userName" class="block mb-1 font-medium">Name</label>
+          <input id="userName" type="text" class="w-full border rounded px-2 py-1" />
+        </div>
+        <div>
+          <label for="userEmail" class="block mb-1 font-medium">Email</label>
+          <input id="userEmail" type="email" class="w-full border rounded px-2 py-1" />
+        </div>
+        <button type="submit" id="submitChoice" class="w-full px-4 py-2 bg-blue-600 text-white rounded"></button>
+        <p id="thankYouMessage" class="hidden text-center text-green-600 mt-2"></p>
+      </form>
     </div>
   </div>
 
   <script>
-    // Lightbox open
+    // Selection modal open
+    let currentBackdropName = '';
     document.querySelectorAll('[data-url]').forEach(card => {
       card.addEventListener('click', () => {
         const url = card.getAttribute('data-url');
         const name = card.getAttribute('data-name');
+        currentBackdropName = name;
         document.getElementById('lightbox-img').src = url;
-        document.getElementById('lightbox-title').textContent = name;
+        document.getElementById('modalTitle').textContent = widgetOpts.selectionTitle;
+        document.getElementById('modalDescription').textContent = widgetOpts.selectionDescription;
+        document.getElementById('submitChoice').textContent = widgetOpts.submitButtonText;
+        document.getElementById('userName').value = '';
+        document.getElementById('userEmail').value = '';
+        document.getElementById('thankYouMessage').classList.add('hidden');
+        document.getElementById('selectionForm').classList.remove('hidden');
         document.getElementById('lightbox').classList.remove('opacity-0', 'pointer-events-none');
       });
     });
-    // Lightbox close
+    // Selection modal close
     document.getElementById('close').onclick = () => {
       document.getElementById('lightbox').classList.add('opacity-0', 'pointer-events-none');
     };
+    // Handle form submission
+    document.getElementById('selectionForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('userName').value;
+      const email = document.getElementById('userEmail').value;
+      const backdropUrl = document.getElementById('lightbox-img').src;
+      fetch(`/embed/v1/${apiKey}/selection`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ backdropUrl, backdropName: currentBackdropName, name, email })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('selectionForm').classList.add('hidden');
+            const thankEl = document.getElementById('thankYouMessage');
+            thankEl.textContent = widgetOpts.thankYouMessage;
+            thankEl.classList.remove('hidden');
+          } else {
+            alert('Error sending selection. Please try again.');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Error sending selection. Please try again.');
+        });
+    });
     // Filter & Sort Controls
     const gallery = document.getElementById('gallery');
     const cards = Array.from(gallery.querySelectorAll('[data-url]'));

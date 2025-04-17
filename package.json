@@ -18,6 +18,7 @@
     "postcss": "^8.4.20",
     "express-session": "^1.17.3",
     "bcrypt": "^5.1.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "nodemailer": "^6.9.0"
   }
 }
