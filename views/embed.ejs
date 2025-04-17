@@ -12,6 +12,16 @@
   <% if (widgetOpts.customCss) { %>
     <style><%= widgetOpts.customCss %></style>
   <% } %>
+  <!-- Caption styling -->
+  <style>
+    .caption {
+      <% if (widgetOpts.captionBgColor) { %>background-color: <%= widgetOpts.captionBgColor %>;<% } %>
+      <% if (widgetOpts.captionFontColor) { %>color: <%= widgetOpts.captionFontColor %>;<% } %>
+      <% if (widgetOpts.captionFontFamily) { %>font-family: '<%= widgetOpts.captionFontFamily %>';<% } %>
+      padding: 0.5rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body id="bodyEl" class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans"
       <% if (widgetOpts.backgroundColor) { %> style="background-color:<%= widgetOpts.backgroundColor %>;"<% } %>>
@@ -60,9 +70,6 @@
              data-url="<%= b.url %>" data-name="<%= b.name %>">
               <img src="<%= b.url %>" alt="<%= b.name %>" loading="lazy"
                class="w-full h-auto object-cover opacity-0 transition-opacity duration-500" />
-          <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-transparent p-2 opacity-0 hover:opacity-100 transition-opacity">
-            <p class="text-white text-sm font-medium"><%= b.name %></p>
-          </div>
           <!-- Always-visible name below image -->
           <p class="p-2 text-center font-medium text-gray-900 dark:text-gray-100"><%= b.name %></p>
         </div>

@@ -29,6 +29,29 @@
              value="<%= widgetOpts.backgroundColor || '#ffffff' %>"
              class="h-8 w-12 border rounded" />
     </div>
+    <div class="mt-4">
+      <label for="captionBgColor" class="block mb-1 font-medium">Caption Background Color</label>
+      <input type="color" id="captionBgColor" name="captionBgColor"
+             value="<%= widgetOpts.captionBgColor || '#f7fafc' %>"
+             class="h-8 w-12 border rounded" />
+    </div>
+    <div class="mt-4">
+      <label for="captionFontColor" class="block mb-1 font-medium">Caption Font Color</label>
+      <input type="color" id="captionFontColor" name="captionFontColor"
+             value="<%= widgetOpts.captionFontColor || '#1a202c' %>"
+             class="h-8 w-12 border rounded" />
+    </div>
+    <div class="mt-4">
+      <label for="captionFontFamily" class="block mb-1 font-medium">Caption Font Family</label>
+      <select id="captionFontFamily" name="captionFontFamily" class="w-full border px-2 py-1 rounded">
+        <option value="" <%= !widgetOpts.captionFontFamily ? 'selected' : '' %>>Default</option>
+        <option value="Arial, sans-serif" <%= widgetOpts.captionFontFamily==='Arial, sans-serif' ? 'selected' : '' %>>Arial</option>
+        <option value="'Helvetica Neue', Helvetica, sans-serif" <%= widgetOpts.captionFontFamily==="'Helvetica Neue', Helvetica, sans-serif" ? 'selected' : '' %>>Helvetica Neue</option>
+        <option value="Georgia, serif" <%= widgetOpts.captionFontFamily==='Georgia, serif' ? 'selected' : '' %>>Georgia</option>
+        <option value="'Courier New', monospace" <%= widgetOpts.captionFontFamily==="'Courier New', monospace" ? 'selected' : '' %>>Courier New</option>
+        <option value="'Times New Roman', Times, serif" <%= widgetOpts.captionFontFamily==="'Times New Roman', Times, serif" ? 'selected' : '' %>>Times New Roman</option>
+      </select>
+    </div>
     <button type="submit" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Widget Options</button>
   </form>
   <h1 class="text-2xl font-bold mb-4">Widget</h1>

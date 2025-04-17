@@ -117,7 +117,16 @@ app.get('/dashboard', ensureAuth, (req, res) => res.redirect('/dashboard/widget'
 app.get('/dashboard/widget', ensureAuth, (req, res) => {
   const host = req.get('host');
   // Load user widget options (default to showing controls)
-  const defaultOpts = { search: true, sort: true, category: true, customCss: '', backgroundColor: '' };
+  const defaultOpts = {
+    search: true,
+    sort: true,
+    category: true,
+    customCss: '',
+    backgroundColor: '',
+    captionBgColor: '',
+    captionFontFamily: '',
+    captionFontColor: ''
+  };
   const opts = Object.assign({}, defaultOpts, res.locals.currentUser.widgetOptions || {});
   // Build embed URL with query flags for controls
   const baseUrl = `${req.protocol}://${host}/embed/v1/${res.locals.currentUser.apiKey}`;
@@ -132,16 +141,19 @@ app.get('/dashboard/widget', ensureAuth, (req, res) => {
 // Regenerate API key
 // Save widget display options
 app.post('/dashboard/widget', ensureAuth, (req, res) => {
-  const { search, sort, category, customCss, backgroundColor } = req.body;
+  const { search, sort, category, customCss, backgroundColor, captionBgColor, captionFontFamily, captionFontColor } = req.body;
   const users = loadJSON(USERS_FILE);
   const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
   if (idx !== -1) {
     users[idx].widgetOptions = {
       search: !!search,
-      sort:   !!sort,
+      sort: !!sort,
       category: !!category,
       customCss: customCss || '',
-      backgroundColor: backgroundColor || ''
+      backgroundColor: backgroundColor || '',
+      captionBgColor: captionBgColor || '',
+      captionFontFamily: captionFontFamily || '',
+      captionFontColor: captionFontColor || ''
     };
     saveJSON(USERS_FILE, users);
   }
@@ -268,7 +280,16 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   // Derive simple categories (first word of name) for filtering
   const categories = [...new Set(backdrops.map(b => b.name.split(' ')[0]))].sort();
   // Get widget options from user, with defaults
-  const defaultOpts = { search: true, sort: true, category: true, customCss: '', backgroundColor: '' };
+  const defaultOpts = {
+    search: true,
+    sort: true,
+    category: true,
+    customCss: '',
+    backgroundColor: '',
+    captionBgColor: '',
+    captionFontFamily: '',
+    captionFontColor: ''
+  };
   const widgetOpts = Object.assign({}, defaultOpts, user.widgetOptions || {});
   // Allow query to override controls (1 = show, 0 = hide)
   ['search', 'sort', 'category'].forEach(opt => {
