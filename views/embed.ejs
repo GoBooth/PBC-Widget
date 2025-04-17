@@ -69,14 +69,14 @@
     <div id="gallery" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     <% backdrops.forEach(b => { %>
         <div role="button" tabindex="0" aria-label="View <%= b.name %> backdrop"
-             class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-gray-200 dark:bg-gray-700 cursor-pointer animate-pulse"
+             class="relative overflow-hidden rounded-xl transform transition hover:scale-105 bg-white dark:bg-gray-800 cursor-pointer"
              data-url="<%= b.url %>" data-name="<%= b.name %>">
-              <img src="<%= b.url %>" alt="<%= b.name %>" loading="lazy"
+          <img src="<%= b.url %>" alt="<%= b.name %>" loading="lazy"
                class="w-full h-auto object-cover opacity-0 transition-opacity duration-500" />
           <!-- Always-visible name below image -->
-        <p class="caption p-2 text-center font-medium"><%= b.name %></p>
+          <p class="caption p-2 text-center font-medium"><%= b.name %></p>
         </div>
-      <% }); %>
+    <% }); %>
     </div>
   </div>
 
@@ -131,17 +131,15 @@
     document.getElementById('sortSelect').addEventListener('change', filterAndSort);
     document.getElementById('categorySelect').addEventListener('change', filterAndSort);
 
-    // Lazy-load: remove skeleton placeholder when images load
+    // Lazy-load: fade in images
     document.querySelectorAll('#gallery [data-url] img').forEach(img => {
-      const card = img.closest('[data-url]');
-      const onLoad = () => {
+      img.addEventListener('load', () => {
         img.classList.remove('opacity-0');
-        card.classList.remove('animate-pulse', 'bg-gray-200');
-        card.classList.add('bg-white', 'dark:bg-gray-800');
-      };
-      img.addEventListener('load', onLoad);
-      // If already loaded (cache), remove skeleton immediately
-      if (img.complete) onLoad();
+      });
+      // If already loaded (cache), remove opacity immediately
+      if (img.complete) {
+        img.classList.remove('opacity-0');
+      }
     });
 
     // Close lightbox on overlay click (touch-friendly)
