@@ -291,11 +291,6 @@ app.get('/embed/v1/:apiKey', (req, res) => {
     captionFontColor: ''
   };
   const widgetOpts = Object.assign({}, defaultOpts, user.widgetOptions || {});
-  // Allow query to override controls (1 = show, 0 = hide)
-  ['search', 'sort', 'category'].forEach(opt => {
-    if (req.query[opt] === '1') widgetOpts[opt] = true;
-    if (req.query[opt] === '0') widgetOpts[opt] = false;
-  });
   // Allow override of background color via query param
   if (req.query.bgColor) {
     widgetOpts.backgroundColor = req.query.bgColor;
