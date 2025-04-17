@@ -108,15 +108,18 @@
     // Filter & Sort Controls
     const gallery = document.getElementById('gallery');
     const cards = Array.from(gallery.querySelectorAll('[data-url]'));
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const categorySelect = document.getElementById('categorySelect');
     function filterAndSort() {
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      const sortOrder  = document.getElementById('sortSelect').value;
-      const category   = document.getElementById('categorySelect').value;
+      const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+      const sortOrder  = sortSelect ? sortSelect.value : '';
+      const category   = categorySelect ? categorySelect.value : '';
       let filtered = cards.filter(card => {
         const name = card.getAttribute('data-name').toLowerCase();
         const cat  = name.split(' ')[0];
-        const matchesSearch   = name.includes(searchTerm);
-        const matchesCategory = !category || cat === category;
+        const matchesSearch   = !searchInput || name.includes(searchTerm);
+        const matchesCategory = !categorySelect || !category || cat === category;
         return matchesSearch && matchesCategory;
       });
       if (sortOrder === 'az') {
@@ -127,9 +130,9 @@
       gallery.innerHTML = '';
       filtered.forEach(card => gallery.appendChild(card));
     }
-    document.getElementById('searchInput').addEventListener('input', filterAndSort);
-    document.getElementById('sortSelect').addEventListener('change', filterAndSort);
-    document.getElementById('categorySelect').addEventListener('change', filterAndSort);
+    if (searchInput) searchInput.addEventListener('input', filterAndSort);
+    if (sortSelect) sortSelect.addEventListener('change', filterAndSort);
+    if (categorySelect) categorySelect.addEventListener('change', filterAndSort);
 
     // Lazy-load: fade in images
     document.querySelectorAll('#gallery [data-url] img').forEach(img => {
