@@ -39,11 +39,12 @@
       </div>
     </div>
     <!-- Gallery -->
-    <div id="gallery" class="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+    <div id="gallery" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       <% backdrops.forEach(b => { %>
-        <div class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-white cursor-pointer" 
+        <div class="relative overflow-hidden rounded-xl shadow-lg transform transition hover:scale-105 bg-gray-200 cursor-pointer animate-pulse" 
              data-url="<%= b.url %>" data-name="<%= b.name %>">
-          <img src="<%= b.url %>" alt="<%= b.name %>" class="w-full h-48 object-cover" />
+          <img src="<%= b.url %>" alt="<%= b.name %>" loading="lazy"
+               class="w-full h-48 object-cover opacity-0 transition-opacity duration-500" />
           <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-transparent p-2 opacity-0 hover:opacity-100 transition-opacity">
             <p class="text-white text-sm font-medium"><%= b.name %></p>
           </div>
@@ -53,8 +54,8 @@
   </div>
 
   <!-- Lightbox Modal -->
-  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="relative bg-white rounded-lg overflow-hidden max-w-lg w-full">
+  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="relative bg-white rounded-lg overflow-hidden w-full max-w-md md:max-w-lg mx-auto">
       <button id="close" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900 text-2xl">&times;</button>
       <img id="lightbox-img" src="" class="w-full h-auto" alt="Backdrop" />
       <p id="lightbox-title" class="p-4 text-center font-semibold text-xl"></p>
@@ -101,6 +102,27 @@
     document.getElementById('searchInput').addEventListener('input', filterAndSort);
     document.getElementById('sortSelect').addEventListener('change', filterAndSort);
     document.getElementById('categorySelect').addEventListener('change', filterAndSort);
+
+    // Lazy-load: remove skeleton placeholder when images load
+    document.querySelectorAll('#gallery [data-url] img').forEach(img => {
+      const card = img.closest('[data-url]');
+      const onLoad = () => {
+        img.classList.remove('opacity-0');
+        card.classList.remove('animate-pulse', 'bg-gray-200');
+        card.classList.add('bg-white');
+      };
+      img.addEventListener('load', onLoad);
+      // If already loaded (cache), remove skeleton immediately
+      if (img.complete) onLoad();
+    });
+
+    // Close lightbox on overlay click (touch-friendly)
+    const lightboxEl = document.getElementById('lightbox');
+    lightboxEl.addEventListener('click', e => {
+      if (e.target.id === 'lightbox') {
+        lightboxEl.classList.add('opacity-0', 'pointer-events-none');
+      }
+    });
   </script>
 </body>
 </html>
