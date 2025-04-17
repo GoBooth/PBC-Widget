@@ -19,6 +19,10 @@
         <input type="checkbox" name="category" <%= widgetOpts.category ? 'checked' : '' %> class="form-checkbox" />
         <span class="ml-2">Enable Category Filter</span>
       </label>
+      <label class="inline-flex items-center">
+        <input type="checkbox" name="showAll" <%= widgetOpts.showAll ? 'checked' : '' %> class="form-checkbox" />
+        <span class="ml-2">Show all backdrops (override selections)</span>
+      </label>
     </div>
     <div class="mt-4">
       <label for="customCss" class="block mb-1 font-medium">Custom CSS (optional)</label>
@@ -56,6 +60,31 @@
     </div>
     <button type="submit" class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Widget Options</button>
   </form>
+  <% // Single Backdrop Preview to test caption styling %>
+  <% const sel = currentUser.selectedBackdrops || []; %>
+  <% const ids = Array.isArray(sel) ? sel : [sel]; %>
+  <% const sampleId = ids.length > 0 ? ids[0] : null; %>
+  <% let sampleName = ''; %>
+  <% if (sampleId) { %>
+    <% if (currentUser.backdropNames && currentUser.backdropNames[sampleId]) { %>
+      <% sampleName = currentUser.backdropNames[sampleId]; %>
+    <% } else { %>
+      <% sampleName = sampleId.replace(/\.[^/.]+$/, ''); %>
+    <% } %>
+  <% } %>
+  <div class="mb-6">
+    <h2 class="text-lg font-semibold mb-2">Single Backdrop Preview</h2>
+    <% if (sampleId) { %>
+      <div class="max-w-xs mx-auto bg-white p-4 rounded shadow">
+        <img src="/Backdrop_photos/<%= sampleId %>" alt="<%= sampleName %>"
+             class="w-full h-auto mb-2 rounded" />
+        <p class="text-center font-medium p-2"
+           style="<% if (widgetOpts.captionBgColor) { %>background-color:<%= widgetOpts.captionBgColor %>;<% } %><% if (widgetOpts.captionFontColor) { %>color:<%= widgetOpts.captionFontColor %>;<% } %><% if (widgetOpts.captionFontFamily) { %>font-family:<%= widgetOpts.captionFontFamily %>;<% } %>"><%= sampleName %></p>
+      </div>
+    <% } else { %>
+      <p class="text-gray-300 italic">No backdrop selected. Please pick at least one in the Backdrops tab.</p>
+    <% } %>
+  </div>
   <h1 class="text-2xl font-bold mb-4">Widget</h1>
   <div class="mb-4">
     <p class="font-medium">Your unique API key:</p>

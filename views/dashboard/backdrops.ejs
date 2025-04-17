@@ -15,7 +15,7 @@
   <form method="POST" class="space-y-4">
     <div class="grid grid-cols-4 gap-4">
       <% backdrops.forEach(b => { %>
-        <label class="block border p-2 rounded <%= selectedBackdrops.includes(b.id) ? 'border-green-500' : 'border-gray-300' %>">
+      <label class="block p-2 rounded">
           <img src="<%= b.url %>" alt="Backdrop" class="w-full h-auto mb-2" />
           <!-- Default Name -->
           <div class="mb-1 text-center font-medium"><%= b.id.replace(/\.[^/.]+$/, '') %></div>

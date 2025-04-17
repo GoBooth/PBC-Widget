@@ -121,6 +121,7 @@ app.get('/dashboard/widget', ensureAuth, (req, res) => {
     search: true,
     sort: true,
     category: true,
+    showAll: false,
     customCss: '',
     backgroundColor: '',
     captionBgColor: '',
@@ -135,13 +136,14 @@ app.get('/dashboard/widget', ensureAuth, (req, res) => {
   if (opts.sort)      params.push('sort=1');       else params.push('sort=0');
   if (opts.category)  params.push('category=1');   else params.push('category=0');
   if (opts.backgroundColor) params.push(`bgColor=${encodeURIComponent(opts.backgroundColor)}`);
+  if (opts.showAll) params.push('forceall=1');
   const embedUrl = `${baseUrl}?${params.join('&')}`;
   res.render('dashboard/widget', { activeTab: 'widget', embedUrl, widgetOpts: opts });
 });
 // Regenerate API key
 // Save widget display options
 app.post('/dashboard/widget', ensureAuth, (req, res) => {
-  const { search, sort, category, customCss, backgroundColor, captionBgColor, captionFontFamily, captionFontColor } = req.body;
+  const { search, sort, category, showAll, customCss, backgroundColor, captionBgColor, captionFontFamily, captionFontColor } = req.body;
   const users = loadJSON(USERS_FILE);
   const idx = users.findIndex(u => u.id === res.locals.currentUser.id);
   if (idx !== -1) {
@@ -149,6 +151,7 @@ app.post('/dashboard/widget', ensureAuth, (req, res) => {
       search: !!search,
       sort: !!sort,
       category: !!category,
+      showAll: !!showAll,
       customCss: customCss || '',
       backgroundColor: backgroundColor || '',
       captionBgColor: captionBgColor || '',
@@ -264,7 +267,8 @@ app.get('/embed/v1/:apiKey', (req, res) => {
   if (fs.existsSync(PHOTOS_DIR)) {
     files = fs.readdirSync(PHOTOS_DIR)
       .filter(f => /\.(jpe?g|png|gif)$/i.test(f));
-    if (user.selectedBackdrops && user.selectedBackdrops.length) {
+    // If not forcing all, apply user's selectedBackdrops filter
+    if (!(user.widgetOptions && user.widgetOptions.showAll) && user.selectedBackdrops && user.selectedBackdrops.length) {
       files = files.filter(f => user.selectedBackdrops.includes(f));
     }
   }
